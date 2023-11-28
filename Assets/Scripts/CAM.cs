@@ -9,4 +9,9 @@ public class CAM : MonoBehaviour
     {
         pl = FindObjectOfType<Player>();
     }
+
+    private void Update()
+    {
+        transform.position = pl.transform.position + new Vector3(0, 0, -10);
+    }
 }

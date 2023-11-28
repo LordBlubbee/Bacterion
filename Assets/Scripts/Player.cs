@@ -5,6 +5,9 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public float MoveSpeed;
+    public Transform shootPoint;
+    public PROJ Proj;
+    private float attackCooldown = 0f;
     CAM cam;
     private void Start()
     {
@@ -20,7 +23,21 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.D)) ix += 1f;
         Vector3 Vec = new Vector3(ix,iy);
         transform.position += Vec * Time.deltaTime * MoveSpeed;
-        transform.Rotate(new Vector3(0, 0, 1), AngleBetween(cam.transform.position + new Vector3(0,0,10)));
+        transform.Rotate(new Vector3(0, 0, 1), AngleBetween(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
+        Shoot();
+    }
+
+    private void Shoot()
+    {
+        if (attackCooldown > 0f)
+        {
+            attackCooldown-= Time.deltaTime;
+            return;
+        }
+        if (!Input.GetMouseButton(0)) return;
+        Instantiate(Proj, shootPoint.position, transform.rotation);
+        attackCooldown = 0.4f;
+        //pew pew
     }
     protected float AngleBetween(Vector3 towards)
     {
@@ -28,15 +45,15 @@ public class Player : MonoBehaviour
     }
     protected float AngleBetween(Vector3 from, Vector3 towards)
     {
-        return Mathf.Abs(Vector2.SignedAngle(getLookVector(), towards - from));
+        return Vector2.SignedAngle(getLookVector(), towards - from);
     }
     protected float AngleBetween(Quaternion rotto, Vector3 from, Vector3 towards)
     {
-        return Mathf.Abs(Vector2.SignedAngle(getLookVector(rotto), towards - from));
+        return Vector2.SignedAngle(getLookVector(rotto), towards - from);
     }
     public float AngleBetween(Vector3 from1, Vector3 towards1, Vector3 from, Vector3 towards)
     {
-        return Mathf.Abs(Vector2.SignedAngle(towards1 - from1, towards - from));
+        return Vector2.SignedAngle(towards1 - from1, towards - from);
     }
     public Vector3 getLookVector()
     {
